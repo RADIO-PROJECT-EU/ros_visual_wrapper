@@ -1,0 +1,2 @@
+ros_visual_topic: '/decision_making/events'
+robot_id: 1
