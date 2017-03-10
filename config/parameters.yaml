@@ -1,2 +1,2 @@
-ros_visual_topic: '/decision_making/events'
+ros_visual_topic: '/classifier/result'
 robot_id: 1
