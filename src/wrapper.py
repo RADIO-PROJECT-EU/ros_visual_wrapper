@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 import os
-import roslib, rospy
-from std_msgs.msg import String
-from datetime import datetime
 import rospkg
+import roslib, rospy
 import subprocess, shlex
+from datetime import datetime
+from std_msgs.msg import String
 
+first_standing_time = 0
+last_sitting_time = 0
 ros_visual_topic = ''
+sitting = False
 logs_path = ''
 robot_id = 0
-sitting = False
-last_sitting_time = 0
-first_standing_time = 0
 
 def init():
     global robot_id, logs_path, ros_visual_topic
@@ -22,7 +22,8 @@ def init():
     robot_id = rospy.get_param("~robot_id", 0)
     rospy.Subscriber(ros_visual_topic, String, eventCallback)
     rospack = rospkg.RosPack()
-    logs_path = rospack.get_path('ros_visual_wrapper')+'/logs/'
+    filename = 'official_log_chair_'+datetime.today().strftime("%d-%m-%Y")+'_'+dt.strftime("%H%M%S")+'.csv'
+    logs_path = rospack.get_path('ros_visual_wrapper') + '/logs/' + filename
     while not rospy.is_shutdown():
         rospy.spin()
 
@@ -31,7 +32,7 @@ def eventCallback(msg):
     dt = datetime.now()
 
     first_time = False
-    if not os.path.isfile(logs_path+'official_log_chair_'+datetime.today().strftime("%d-%m-%Y")+'.csv'):
+    if not os.path.isfile(logs_path):
         first_time = True
     if msg.data == 'sit':
         sitting = True
@@ -39,7 +40,7 @@ def eventCallback(msg):
     elif msg.data == 'stand' and sitting:
         sitting = False
         first_standing_time = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
-        with open(logs_path+'official_log_chair_'+datetime.today().strftime("%d-%m-%Y")+'.csv','ab+') as f:
+        with open(logs_path,'ab+') as f:
             if first_time:
                 f.write("Sitting-Standing time\n")
             f.write(str((first_standing_time - last_sitting_time) / 1E6)+"\n")
