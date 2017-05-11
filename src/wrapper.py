@@ -37,7 +37,7 @@ def eventCallback(msg):
     if msg.data == 'sit':
         sitting = True
         last_sitting_time = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
-    elif msg.data == 'stand' and sitting:
+    elif 'stand' in msg.data and sitting:
         sitting = False
         first_standing_time = dt.minute*60000000 + dt.second*1000000 + dt.microsecond
         with open(logs_path,'ab+') as f:
